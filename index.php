@@ -536,6 +536,41 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
         right: 30px;
       }
     }
+    /* Add-to-Home-Screen Banner styling */
+    #addToHomeScreenBanner {
+      display: none; /* standaard verborgen */
+      position: fixed;
+      bottom: calc(20px + env(safe-area-inset-bottom, 0px)); /* houdt rekening met de safe area onderin */
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #FFB347; /* lichtere oranje tint */
+      color: #fff;
+      padding: 15px 20px;
+      font-size: 16px;
+      text-align: center;
+      border-radius: 8px;
+      z-index: 3000;
+      max-width: 90%;
+    }
+
+    #addToHomeScreenBanner .arrow {
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #FFB347;
+      margin: 10px auto 0;
+    }
+
+    #addToHomeScreenBanner button {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-weight: bold;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
   </style>
   <script>
     // Als web app (standalone) op iOS: voeg de class 'standalone' toe aan de body
@@ -573,7 +608,13 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
       </div>
     </section>
   </div>
-  
+  <!-- Add-to-Home-Screen Banner -->
+  <div id="addToHomeScreenBanner">
+    <p>To add this site to your Home Screen as an App, tap the share icon at the bottom and select "Add to Home Screen".</p>
+    <div class="arrow"></div>
+    <button id="dismissBanner">Close</button>
+  </div>
+
   <script>
     // Logout knop
     document.getElementById('logoutBtn').addEventListener('click', function(){
@@ -761,6 +802,24 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
     setInterval(fetchConsole, 3000);
     fetchPlayers();
     fetchConsole();
+    document.addEventListener("DOMContentLoaded", function() {
+      var isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+      var isInStandaloneMode = ('standalone' in window.navigator) && window.navigator.standalone;
+      
+      // Toon de banner als het een iOS-apparaat is, niet in standalone mode én de banner nog niet is gesloten
+      if (isIos && !isInStandaloneMode && !localStorage.getItem("addToHomeScreenDismissed")) {
+        setTimeout(function() {
+          document.getElementById("addToHomeScreenBanner").style.display = "block";
+        }, 5000);
+      }
+      
+      // Wanneer de gebruiker op "Close" klikt, verberg de banner en onthoud de keuze
+      document.getElementById("dismissBanner").addEventListener("click", function() {
+        document.getElementById("addToHomeScreenBanner").style.display = "none";
+        localStorage.setItem("addToHomeScreenDismissed", "true");
+      });
+    });
+
   </script>
 </body>
 </html>
