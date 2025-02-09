@@ -74,9 +74,6 @@ function rcon_getResponse($socket) {
 
 /**
  * Parses the player list.
- * Splitst op komma en/of newlines, verwijdert alle tekens tot en met de eerste dubbele punt en spatie
- * (leidende groepsinformatie) en verwijdert "[AFK]" uit de naam.
- * Indien "[AFK]" voorkomt, wordt dit als flag opgeslagen.
  */
 function parsePlayerList($response) {
     $players = [];
@@ -100,7 +97,7 @@ function parsePlayerList($response) {
 }
 
 /**
- * Parses een lijst (zoals voor ops) door te splitsen op komma, CR en LF.
+ * Parses a list (e.g. for ops) by splitting on commas, CR and LF.
  */
 function parseListFromResponse($response) {
     $list = [];
@@ -216,7 +213,6 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
       color: #e0e0e0;
       font-family: 'Roboto', sans-serif;
       margin: 0;
-      /* Alleen links en rechts 20px, boven en onder 0 */
       padding: 0 20px;
       box-sizing: border-box;
     }
@@ -296,8 +292,8 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
       height: 100vh;
       max-width: 1200px;
       margin: 0 auto;
-      padding-top: 40px; /* 40px ruimte bovenaan zodat de logout knop niet over de titel valt */
-      padding-bottom: 30px; /* Onderkant 30px */
+      padding-top: 40px; /* ruimte bovenaan zodat de logout knop niet over de titel valt */
+      padding-bottom: 30px;
       box-sizing: border-box;
     }
     body {
@@ -305,12 +301,17 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
       color: #e0e0e0;
       font-family: 'Roboto', sans-serif;
       margin: 0;
-      /* Alleen links en rechts 10px */
       padding: 0 10px;
     }
     h1, h2 {
       text-align: center;
       margin-bottom: 10px;
+      margin-top: 5px;
+    }
+    /* Zorg dat het connected-to gedeelte gecentreerd is met 10px marge */
+    .connected {
+      text-align: center;
+      margin: 10px 0;
     }
     /* Op mobiel: halveer de ruimte tussen de elementen */
     @media (max-width: 600px) {
@@ -321,7 +322,6 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
       .connected {
         margin-top: 5px;
         margin-bottom: 5px;
-        text-align: center;
       }
       #playersSection {
         margin-top: 5px;
@@ -343,7 +343,7 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
       border-radius: 5px;
       font-weight: bold;
     }
-    /* Online Players styling: container 75% breed, max-width 500px, gecentreerd */
+    /* Online Players styling */
     #playersSection {
       margin-bottom: 10px;
     }
@@ -383,7 +383,6 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
       flex: 1;
       text-align: left;
       font-size: 1.1em;
-      font-weight: bold;
       padding-right: 10px;
     }
     .player-actions {
@@ -408,10 +407,12 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
       display: flex;
       flex-direction: column;
       min-height: 150px;
+      position: relative;
     }
     .console-container {
       position: relative;
       flex-grow: 1;
+      margin-top: 10px; /* 10px extra marge bovenaan */
       margin-bottom: 10px;
       background: #000;
       color: #fff;
@@ -427,7 +428,7 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
       margin: 0;
       padding: 2px 0;
     }
-    /* Command input styling: command balk zonder negatieve marge, sticky onderaan */
+    /* Command input styling */
     .command-container {
       display: inline-flex;
       align-items: center;
@@ -463,16 +464,52 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
     
     /* Extra CSS voor web app mode (standalone) */
     body.standalone .command-container {
-        /* Hier kun je extra marges of padding instellen als de site in standalone mode draait */
-        margin-bottom: 40px; /* voorbeeldwaarde */
+        margin-bottom: 40px;
     }
-
-    /* Pas ook de positie van de logout-knop aan in standalone mode */
     body.standalone .logout {
         top: env(safe-area-inset-top);
     }
     body.standalone h1 {
       margin-top: calc(40px + env(safe-area-inset-top));
+    }
+    body.standalone #consoleSection.fullscreen {
+      /* Pas de bovenruimte aan: 20px extra plus de safe-area inset als die er is */
+      padding-top: calc(20px + env(safe-area-inset-top, 0px));
+    }
+
+    /* ===== Fullscreen toggle knop en fullscreen styling ===== */
+    /* De knop staat nu direct in #consoleSection (buiten de scrollbare .console-container) */
+    #fullscreenToggleBtn {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      background: #ff8800;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      z-index: 1100;
+    }
+
+    #fullscreenToggleBtn:hover {
+      background: #ffaa00;
+    }
+    #consoleSection.fullscreen #fullscreenToggleBtn {
+      top: calc(40px + env(safe-area-inset-top, 0px));
+      right: 45px;
+    }
+    /* Fullscreen-styling voor de consoleSection */
+    #consoleSection.fullscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #1e1e1e;
+      z-index: 1000;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
     /* Responsive styling voor smartphones */
@@ -489,7 +526,14 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
         min-height: 100px;
       }
       .container {
-        padding: 10px 10px 10px 10px;
+        padding: 10px;
+      }
+      #fullscreenToggleBtn {
+        right: 10px;
+      }
+      #consoleSection.fullscreen #fullscreenToggleBtn {
+        top: calc(40px + env(safe-area-inset-top, 0px));
+        right: 30px;
       }
     }
   </style>
@@ -518,7 +562,8 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
     
     <!-- Console and Command Input -->
     <section id="consoleSection">
-      <h2>Console Output</h2>
+      <!-- Fullscreen-knop staat nu direct hier, zodat deze altijd zichtbaar blijft -->
+      <button id="fullscreenToggleBtn">Fullscreen</button>
       <div class="console-container" id="consoleContainer">
         <div id="console"></div>
       </div>
@@ -559,11 +604,10 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
               
               let nameDiv = document.createElement('div');
               nameDiv.className = 'player-name';
-              // Verwijder "[AFK]" voor de bold; voeg dit daarna als gewone witte tekst toe indien afwezig.
               let nameForBold = player.name.replace(/\[AFK\]/i, "").trim();
               let displayName = "<b>" + convertMinecraftColors(nameForBold) + "</b>";
               if (player.afk) {
-                displayName += " <span style='color:#fff;'>[AFK]</span>";
+                displayName += " <span style='color:#888;'>[AFK]</span>";
               }
               nameDiv.innerHTML = displayName;
               card.appendChild(nameDiv);
@@ -600,7 +644,7 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
         });
     }
     
-    // Fetch console output met timestamp per regel
+    // Fetch console output met timestamp per regel en zorg voor auto-scroll
     function fetchConsole() {
       fetch('?action=getConsole')
         .then(response => response.json())
@@ -625,7 +669,9 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
                 }
               });
             });
-            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            // Scroll de console-container naar beneden
+            let container = document.getElementById('consoleContainer');
+            container.scrollTop = container.scrollHeight;
           }
         });
     }
@@ -655,6 +701,20 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
     document.getElementById('commandInput').addEventListener('keydown', function(e){
       if (e.key === "Enter") {
         document.getElementById('sendCommandBtn').click();
+      }
+    });
+    
+    // Fullscreen toggle knop functionaliteit
+    document.getElementById('fullscreenToggleBtn').addEventListener('click', function() {
+      let consoleSection = document.getElementById('consoleSection');
+      if (consoleSection.classList.contains('fullscreen')) {
+        // Verlaat fullscreen
+        consoleSection.classList.remove('fullscreen');
+        this.textContent = 'Fullscreen';
+      } else {
+        // Ga naar fullscreen
+        consoleSection.classList.add('fullscreen');
+        this.textContent = 'Exit Fullscreen';
       }
     });
     
