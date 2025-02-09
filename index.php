@@ -231,7 +231,7 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
     }
     .login-container h2 {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 0px;
     }
     .login-container input {
       width: 100%;
@@ -280,6 +280,9 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
 <head>
   <meta charset="utf-8">
   <title>Minecraft RCON Client</title>
+  <!-- Meta-tags voor web app mode op iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -293,7 +296,8 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
       height: 100vh;
       max-width: 1200px;
       margin: 0 auto;
-      padding-bottom: 30px; /* Zorgt dat de onderkant 30px hoger ligt */
+      padding-top: 40px; /* 40px ruimte bovenaan zodat de logout knop niet over de titel valt */
+      padding-bottom: 30px; /* Onderkant 30px */
       box-sizing: border-box;
     }
     body {
@@ -301,12 +305,31 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
       color: #e0e0e0;
       font-family: 'Roboto', sans-serif;
       margin: 0;
-      /* Alleen links en rechts 20px, boven en onder 0 */
-      padding: 0 20px;
+      /* Alleen links en rechts 10px */
+      padding: 0 10px;
     }
     h1, h2 {
       text-align: center;
       margin-bottom: 10px;
+    }
+    /* Op mobiel: halveer de ruimte tussen de elementen */
+    @media (max-width: 600px) {
+      h1 {
+        margin-top: 60px;
+        margin-bottom: 5px;
+      }
+      .connected {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        text-align: center;
+      }
+      #playersSection {
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+      #consoleSection {
+        margin-top: 5px;
+      }
     }
     .logout {
       position: absolute;
@@ -322,7 +345,7 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
     }
     /* Online Players styling: container 75% breed, max-width 500px, gecentreerd */
     #playersSection {
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     #togglePlayersBtn {
       display: block;
@@ -340,20 +363,21 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
     #players {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 5px;
       width: 75%;
       max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: 0 auto;
+      box-sizing: border-box;
     }
     .player-card {
       background: #2a2a2a;
-      padding: 10px 15px;
+      padding: 8px 10px;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.5);
       display: flex;
       align-items: center;
       width: 100%;
+      box-sizing: border-box;
     }
     .player-name {
       flex: 1;
@@ -383,11 +407,11 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
       flex-grow: 1;
       display: flex;
       flex-direction: column;
-      min-height: 350px;
+      min-height: 150px;
     }
-    #console {
+    .console-container {
+      position: relative;
       flex-grow: 1;
-      min-height: 300px;
       margin-bottom: 10px;
       background: #000;
       color: #fff;
@@ -403,7 +427,7 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
       margin: 0;
       padding: 2px 0;
     }
-    /* Command input styling: command balk zonder negatieve marge */
+    /* Command input styling: command balk zonder negatieve marge, sticky onderaan */
     .command-container {
       display: inline-flex;
       align-items: center;
@@ -437,6 +461,20 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
       background: #ffaa00;
     }
     
+    /* Extra CSS voor web app mode (standalone) */
+    body.standalone .command-container {
+        /* Hier kun je extra marges of padding instellen als de site in standalone mode draait */
+        margin-bottom: 40px; /* voorbeeldwaarde */
+    }
+
+    /* Pas ook de positie van de logout-knop aan in standalone mode */
+    body.standalone .logout {
+        top: env(safe-area-inset-top);
+    }
+    body.standalone h1 {
+      margin-top: calc(40px + env(safe-area-inset-top));
+    }
+
     /* Responsive styling voor smartphones */
     @media (max-width: 600px) {
       #players {
@@ -444,23 +482,32 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
         max-width: 100%;
       }
       .player-card {
-        padding: 8px 10px;
+        padding: 6px 8px;
       }
       #console {
         font-size: 0.85em;
+        min-height: 100px;
       }
       .container {
-        padding: 10px;
+        padding: 10px 10px 10px 10px;
       }
     }
   </style>
+  <script>
+    // Als web app (standalone) op iOS: voeg de class 'standalone' toe aan de body
+    if (window.navigator.standalone) {
+      document.addEventListener("DOMContentLoaded", function() {
+        document.body.classList.add("standalone");
+      });
+    }
+  </script>
 </head>
 <body>
   <button class="logout" id="logoutBtn">Log out</button>
   <div class="container">
     <h1>Minecraft RCON Client</h1>
     <!-- Toon de verbonden server -->
-    <p style="text-align:center;">Connected to <?php echo htmlspecialchars($_COOKIE['rcon_host']); ?></p>
+    <p class="connected">Connected to <?php echo htmlspecialchars($_COOKIE['rcon_host']); ?></p>
     
     <!-- Online Players -->
     <section id="playersSection">
@@ -472,7 +519,9 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
     <!-- Console and Command Input -->
     <section id="consoleSection">
       <h2>Console Output</h2>
-      <div id="console"></div>
+      <div class="console-container" id="consoleContainer">
+        <div id="console"></div>
+      </div>
       <div class="command-container">
         <input type="text" id="commandInput" placeholder="Enter command..." />
         <button id="sendCommandBtn">Send</button>
@@ -481,7 +530,7 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
   </div>
   
   <script>
-    // Logout
+    // Logout knop
     document.getElementById('logoutBtn').addEventListener('click', function(){
       fetch('?action=logout').then(function(){ location.reload(); });
     });
@@ -522,7 +571,7 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
               let actionsDiv = document.createElement('div');
               actionsDiv.className = 'player-actions';
               
-              // Kick button met reden
+              // Kick knop met reden
               let kickBtn = document.createElement('button');
               kickBtn.textContent = 'Kick';
               kickBtn.onclick = function(){
@@ -533,7 +582,7 @@ if (!isset($_COOKIE['rcon_host']) || !isset($_COOKIE['rcon_port']) || !isset($_C
               };
               actionsDiv.appendChild(kickBtn);
               
-              // Ban button met reden
+              // Ban knop met reden
               let banBtn = document.createElement('button');
               banBtn.textContent = 'Ban';
               banBtn.onclick = function(){
