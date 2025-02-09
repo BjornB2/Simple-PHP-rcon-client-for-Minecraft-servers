@@ -2,10 +2,8 @@
 
 A simple, web-based Minecraft RCON Client written in PHP. This project allows you to connect to your Minecraft server via RCON, execute commands, view real-time console output, and manage online players—all from your browser. The interface also supports a mobile web app mode with an integrated "Add to Home Screen" prompt for iOS users.
 
-<img src="screenshots/webapp.jpg" alt="Screenshot-webapp" width="350px">
-<img src="screenshots/webapp-fullscreen.jpg" alt="Screenshot-webapp-fullscreen" width="350px">
-<img src="screenshots/desktop.png" alt="Screenshot-desktop" width="350px">
-<img src="screenshots/desktop-fullscreen.png" alt="Screenshot-desktop-fullscreen" width="350px">
+<img src="screenshots/webapp.jpg" alt="Screenshot-webapp" width="350px"> <img src="screenshots/webapp-fullscreen.jpg" alt="Screenshot-webapp-fullscreen" width="350px">
+<img src="screenshots/desktop.png" alt="Screenshot-desktop" width="350px"> <img src="screenshots/desktop-fullscreen.png" alt="Screenshot-desktop-fullscreen" width="350px">
 
 ## Features
 
@@ -26,3 +24,7 @@ A simple, web-based Minecraft RCON Client written in PHP. This project allows yo
 
 - **Session-Based Login:**  
   Secure login functionality using cookies for persistent sessions.
+
+## Installation
+
+Copy the index.php file to a php capable webserver. That's it. No images, seperate css files or whatever. Just one single file.
