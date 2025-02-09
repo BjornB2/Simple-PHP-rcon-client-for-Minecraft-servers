@@ -2,10 +2,10 @@
 
 A simple, web-based Minecraft RCON Client written in PHP. This project allows you to connect to your Minecraft server via RCON, execute commands, view real-time console output, and manage online players—all from your browser. The interface also supports a mobile web app mode with an integrated "Add to Home Screen" prompt for iOS users.
 
-<img src="screenshots/webapp.png" alt="Screenshot-webapp" width="400px">
-<img src="screenshots/webapp-fullscreen.png" alt="Screenshot-webapp-fullscreen" width="400px">
-<img src="screenshots/desktop.png" alt="Screenshot-desktop" width="400px">
-<img src="screenshots/desktop-fullscreen.png" alt="Screenshot-desktop-fullscreen" width="400px">
+<img src="screenshots/webapp.jpg" alt="Screenshot-webapp" width="350px">
+<img src="screenshots/webapp-fullscreen.jpg" alt="Screenshot-webapp-fullscreen" width="350px">
+<img src="screenshots/desktop.png" alt="Screenshot-desktop" width="350px">
+<img src="screenshots/desktop-fullscreen.png" alt="Screenshot-desktop-fullscreen" width="350px">
 
 ## Features
 
